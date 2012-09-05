@@ -1,0 +1,41 @@
+/*
+	Put anything you reference with "url()" in ../assets/
+	This way, you can minify your application, and just remove the "source" folder for production
+*/
+.publication {
+	margin: 20px 20px;
+	display:block;
+	font: 85% verdana,tahoma,sans-serif;
+	
+	font-style: normal;
+}
+.pub-authors{
+	margin-right: 5px;
+}
+.pub-title:link {color:#656565;}      /* unvisited link */
+.pub-title:visited {color:#656565;}  /* visited link */
+.pub-title:hover {color:#656565;}  /* mouse over link */
+.pub-title:active {color:#656565;} 
+.pub-title{
+	color:#656565;
+	font-weight: bold;
+	margin-right: 5px;
+}
+.pub-proceedings{
+	font-style: italic;
+}
+.pub-proceedings-extra{
+	margin-right: 5px;
+}
+.divider{
+	padding-bottom: 20px;
+	display:block;
+	font-size: 115%;
+	color:#FF7E00;
+}
+.pub-doi{
+	margin-right: 5px;
+}
+.pub-year{
+	margin-right: 5px;
+}
