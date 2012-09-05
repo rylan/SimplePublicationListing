@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Enyo Bootplate App</title>
+		<title>Simple Publication Listing from bibtex</title>
 		<link rel="shortcut icon" href="assets/favicon.ico"/>
 		<!-- -->
 		<meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
@@ -13,8 +13,13 @@
 		<script src="source/package.js" type="text/javascript"></script>
 	</head>
 	<body class="enyo-unselectable">
+		<!-- Example of rendering into a specific element -->
+		<div name="pub"></div>
 		<script>
-			new ca.ucalgary.cpsc.lsmr.Publications().renderInto(document.body);
+
+			new ca.ucalgary.cpsc.lsmr.Publications().renderInto(document.getElementsByName("pub")[0]);
 		</script>
+
+
 	</body>
 </html>
