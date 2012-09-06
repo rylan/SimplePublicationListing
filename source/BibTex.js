@@ -1,3 +1,9 @@
+/*
+    Changes made --> modified _extractAuthors
+
+*/
+
+
 /**
  * Javascript BibTex Parser v0.1
  * Copyright (c) 2008 Simon Fraser University
@@ -1327,123 +1333,41 @@ BibTex.prototype = {
      */
     '_extractAuthors': function(entry) {
         entry       = this._unwrap(entry);
-        var authorarray = array();
-        authorarray = split(' and ', entry);
-        for (var i = 0; i < sizeof(authorarray); i++) {
-            var author = trim(authorarray[i]);
-            /*The first version of how an author could be written (First von Last)
-             has no commas in it*/
-            var first    = '';
-            var von      = '';
-            var last     = '';
-            var jr       = '';
-            if (strpos(author, ',') === false) {
-                var tmparray = array();
-                //tmparray = explode(' ', author);
-                tmparray = split(' |~', author);
-                var size     = sizeof(tmparray);
-                if (1 == size) { //There is only a last
-                    last = tmparray[0];
-                } else if (2 == size) { //There is a first and a last
-                    first = tmparray[0];
-                    last  = tmparray[1];
+        
+        var i, j, middle, von, jr, authorA
+            authorarray = [],
+            authors = entry.split(' and ');
+            
+        for(i = 0; i < authors.length; i++){
+            authorA = authors[i].trim().split(',');
+            middle = "";
+            if(authorA.length == 1){ // FIRST LAST
+                authorA = authors[i].trim().split(' ');
+                if(authorA.length == 1){
+                  authorarray.push({last:authorA[0].trim(), first:"", von:"", jr:"", initials:""});
+                } else if(authorA.length == 2){
+                  authorarray.push({last:authorA[1].trim(), first:authorA[0].trim(), von:"", jr:"", initials:""}); 
                 } else {
-                    var invon  = false;
-                    var inlast = false;
-                    for (var j=0; j<(size-1); j++) {
-                        if (inlast) {
-                            last += ' '+tmparray[j];
-                        } else if (invon) {
-                            casev = this._determineCase(tmparray[j]);
-                            if (this.isError(casev)) {
-                                // IGNORE?
-                            } else if ((0 == casev) || (-1 == casev)) { //Change from von to last
-                                //You only change when there is no more lower case there
-                                islast = true;
-                                for (var k=(j+1); k<(size-1); k++) {
-                                    futurecase = this._determineCase(tmparray[k]);
-                                    if (this.isError(casev)) {
-                                        // IGNORE?
-                                    } else if (0 == futurecase) {
-                                        islast = false;
-                                    }
-                                }
-                                if (islast) {
-                                    inlast = true;
-                                    if (-1 == casev) { //Caseless belongs to the last
-                                        last += ' '+tmparray[j];
-                                    } else {
-                                        von  += ' '+tmparray[j];
-                                    }
-                                } else {
-                                    von    += ' '+tmparray[j];
-                                }
-                            } else {
-                                von += ' '+tmparray[j];
-                            }
+                    von = "";
+                    jr = "";
+                    intialis = "";
+                    for(j = 1; j < authorA.length-1; j++){
+                        if(authorA[j].match("von")){
+                            von = authorA[j];
+                        }else if(authorA[j].match("jr")){
+                            jr = authorA[j];
                         } else {
-                            var casev = this._determineCase(tmparray[j]);
-                            if (this.isError(casev)) {
-                                // IGNORE?
-                            } else if (0 == casev) { //Change from first to von
-                                invon = true;
-                                von   += ' '+tmparray[j];
-                            } else {
-                                first += ' '+tmparray[j];
-                            }
+                            middle += " "+authorA[j];
                         }
                     }
-                    //The last entry is always the last!
-                    last += ' '+tmparray[size-1];
+                    authorarray.push({last:authorA[authorA.length-1].trim(), first:authorA[0].trim()+middle , von:von, jr:jr}); 
                 }
-            } else { //Version 2 and 3
-                var tmparray     = array();
-                tmparray     = explode(',', author);
-                //The first entry must contain von and last
-                vonlastarray = array();
-                vonlastarray = explode(' ', tmparray[0]);
-                size         = sizeof(vonlastarray);
-                if (1==size) { //Only one entry.got to be the last
-                    last = vonlastarray[0];
-                } else {
-                    inlast = false;
-                    for (var j=0; j<(size-1); j++) {
-                        if (inlast) {
-                            last += ' '+vonlastarray[j];
-                        } else {
-                            if (0 != (this._determineCase(vonlastarray[j]))) { //Change from von to last
-                                islast = true;
-                                for (var k=(j+1); k<(size-1); k++) {
-                                    this._determineCase(vonlastarray[k]);
-                                    casev = this._determineCase(vonlastarray[k]);
-                                    if (this.isError(casev)) {
-                                        // IGNORE?
-                                    } else if (0 == casev) {
-                                        islast = false;
-                                    }
-                                }
-                                if (islast) {
-                                    inlast = true;
-                                    last   += ' '+vonlastarray[j];
-                                } else {
-                                    von    += ' '+vonlastarray[j];
-                                }
-                            } else {
-                                von    += ' '+vonlastarray[j];
-                            }
-                        }
-                    }
-                    last += ' '+vonlastarray[size-1];
-                }
-                //Now we check if it is version three (three entries in the array (two commas)
-                if (3==sizeof(tmparray)) {
-                    jr = tmparray[1];
-                }
-                //Everything in the last entry is first
-                first = tmparray[sizeof(tmparray)-1];
+            } else { // LAST, FIRST
+                authorarray.push({last:authorA[0].trim(), first:authorA[1].trim() , von:"", jr:""});
             }
-            authorarray[i] = {'first':trim(first), 'von':trim(von), 'last':trim(last), 'jr':trim(jr)};
-        }
+        }    
+        
+       
         return authorarray;
     },
 
@@ -1462,34 +1386,36 @@ BibTex.prototype = {
      */
     '_determineCase': function(word) {
         var ret         = -1;
-        var trimmedword = trim (word);
-        /*We need this variable+ Without the next of would not work
-         (trim changes the variable automatically to a string!)*/
-        if (is_string(word) && (strlen(trimmedword) > 0)) {
-            var i         = 0;
-            var found     = false;
-            var openbrace = 0;
-            while (!found && (i <= strlen(word))) {
-                var letter = substr(trimmedword, i, 1);
-                var ordv    = ord(letter);
-                if (ordv == 123) { //Open brace
-                    openbrace++;
+        if(word) {
+            var trimmedword = trim (word);
+            /*We need this variable+ Without the next of would not work
+            (trim changes the variable automatically to a string!)*/
+            if (is_string(word) && (strlen(trimmedword) > 0)) {
+                var i         = 0;
+                var found     = false;
+                var openbrace = 0;
+                while (!found && (i <= strlen(word))) {
+                    var letter = substr(trimmedword, i, 1);
+                    var ordv    = ord(letter);
+                    if (ordv == 123) { //Open brace
+                        openbrace++;
+                    }
+                    if (ordv == 125) { //Closing brace
+                        openbrace--;
+                    }
+                    if ((ordv>=65) && (ordv<=90) && (0==openbrace)) { //The first character is uppercase
+                        ret   = 1;
+                        found = true;
+                    } else if ( (ordv>=97) && (ordv<=122) && (0==openbrace) ) { //The first character is lowercase
+                        ret   = 0;
+                        found = true;
+                    } else { //Not yet found
+                        i++;
+                    }
                 }
-                if (ordv == 125) { //Closing brace
-                    openbrace--;
-                }
-                if ((ordv>=65) && (ordv<=90) && (0==openbrace)) { //The first character is uppercase
-                    ret   = 1;
-                    found = true;
-                } else if ( (ordv>=97) && (ordv<=122) && (0==openbrace) ) { //The first character is lowercase
-                    ret   = 0;
-                    found = true;
-                } else { //Not yet found
-                    i++;
-                }
+            } else {
+                ret = this.raiseError('Could not determine case on word: '+word);
             }
-        } else {
-            ret = this.raiseError('Could not determine case on word: '+word);
         }
         return ret;
     },

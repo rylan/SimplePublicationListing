@@ -39,3 +39,12 @@
 .pub-year{
 	margin-right: 5px;
 }
+.pub-doi:link {color:#656565;}      /* unvisited link */
+.pub-doi:visited {color:#656565;}  /* visited link */
+.pub-doi:hover {color:#656565;}  /* mouse over link */
+.pub-doi:active {color:#656565;} 
+.pub-doi{
+	color:#656565;
+	font-weight: bold;
+	margin-right: 5px;
+}
