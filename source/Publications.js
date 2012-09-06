@@ -149,8 +149,14 @@ enyo.kind({
 		} else {
 			if(data.entryType ==='phdthesis'){
 				extra += "PhD. Thesis, ";
-			}else if(data.entryType ==='mscthesis'){
+			}else if(data.entryType ==='masterthesis'){
 				extra += "MSc. Thesis, ";
+			}else if(data.entryType ==='techreport'){
+				extra +="Technical Report "+data.number+", "
+			}
+
+			if(data.institution){
+				extra+= data.institution +", ";
 			}
 
 			if(data.location){
@@ -164,7 +170,7 @@ enyo.kind({
 		return extra;
 	},
 	sepecialCharReplace: function(inString){
-		var s = inString.replace("\\\"{o}", "&ouml").replace("\\\"o", "&ouml");
+		var s = inString.replace('{\\"o}', "&ouml").replace('\\"{o}', "&ouml").replace('\\"o', "&ouml");
 		return s;
 	}
 });
