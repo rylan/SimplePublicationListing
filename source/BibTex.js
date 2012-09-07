@@ -592,7 +592,7 @@ function wordwrap( str, int_width, str_break, cut ) {
     }
     for(i = -1, l = (r = str.split("\n")).length; ++i < l; r[i] += s) {
         for(s = r[i], r[i] = ""; s.length > m; r[i] += s.slice(0, j) + ((s = s.slice(j)).length ? b : "")){
-            j = c == 2 || (j = s.slice(0, m + 1).match(/\S*(\s)?$/))[1] ? m : j.input.length - j[0].length || c == 1 && m || j.input.length + (j = s.slice(m).match(/^\S*/)).input.length;
+            j = c === 2 || (j = s.slice(0, m + 1).match(/\S*(\s)?$/))[1] ? m : j.input.length - j[0].length || c === 1 && m || j.input.length + (j = s.slice(m).match(/^\S*/)).input.length;
         }
     }
     
@@ -1023,7 +1023,7 @@ BibTex.prototype = {
             if (sizeof(cites) != sizeof(unique)) { //Some values have not been unique!
                 notuniques = [];
                 for (var i = 0; i < sizeof(cites); i++) {
-                    if ('' == unique[i]) {
+                    if ('' === unique[i]) {
                         notuniques.push(cites[i]);
                     }
                 }
@@ -1083,7 +1083,7 @@ BibTex.prototype = {
                 position = strrpos(entry, '=');
                 //Checking that the equal sign is not quoted or is not inside a equation (For example in an abstract)
                 proceed  = true;
-                if (substr(entry, position-1, 1) == '\\') {
+                if (substr(entry, position-1, 1) === '\\') {
                     proceed = false;
                 }
                 if (proceed) {
